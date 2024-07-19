@@ -277,6 +277,55 @@ function gethuge()
     return false
 end
 
+---
+
+local firstpet = {}
+
+for i,v in pairs(Client.InventoryCmds.State().container._store._byType.Pet._byUID) do
+    if string.find(string.lower(v._data.id), 'huge') then
+        if not firstpet[i] then
+            firstpet[i] = v._data.id
+        end
+    end
+end
+
+function webhook(status)
+    spawn(function()
+        local url = getgenv().Config.WebhookURL
+        local data = {
+        ["content"] = "Webhook",
+        ["embeds"] = {
+            {
+                ["title"] = "Noti!",
+                ["description"] = "Username: " .."||".. game.Players.LocalPlayer.Name.. "||".. "\nHuge You Got: " ..  status,
+                ["type"] = "rich",
+                ["color"] = tonumber(0xff8200),
+            }
+        }
+        }
+        local newdata = game:GetService("HttpService"):JSONEncode(data)
+
+        local headers = {
+        ["content-type"] = "application/json"
+        }
+        request = http_request or request or HttpPost or syn.request
+        local abcdef = {Url = url, Body = newdata, Method = "POST", Headers = headers}
+        request(abcdef)
+    end)
+end
+
+function webhookne()
+    for i,v in pairs(Client.InventoryCmds.State().container._store._byType.Pet._byUID) do
+        if string.find(string.lower(v._data.id), 'huge') then
+            if not firstpet[i] then
+                webhook(v._data.id)
+                wait(1)
+                firstpet[i] = v._data.id
+            end
+        end
+    end
+end
+
 --- 
 function getpet(name)
     for i,v in pairs(Client.InventoryCmds.State().container._store._byType.Pet._byUID) do
@@ -443,6 +492,13 @@ spawn(function()
     end
 end)
 
+spawn(function()
+    while true do wait(10)
+        pcall(webhookne)
+    end
+end)
+
+-- webhookne
 spawn(function()
     while true do wait(60)
         if getgenv().status == false then
