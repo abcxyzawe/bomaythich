@@ -423,25 +423,30 @@ function autosendmail()
     else
         getgenv().sendmail = false
     end
-    for i,v in pairs(getgenv().Config.configsendmail) do
-        if getalldata(v.datafind, v.Type,v.rateenchant) ~= false then
-            getgenv().sendmail = true
-            if not Client.MapCmds.IsInSpawn() then
-                plr.Character.HumanoidRootPart.CFrame = CFrame.new(-10278.68359375, 2.0725455284118652, -7387.09326171875) * CFrame.new(0,5,0)
-                return
+    for i,v in pairs(Client.InventoryCmds.State().container._store._byType.Pet._byUID) do
+        if string.find(string.lower(v._data.id), 'huge') then
+            if not firstpet[i] then
+                getgenv().sendmail = true
+                if not Client.MapCmds.IsInSpawn() then
+                    plr.Character.HumanoidRootPart.CFrame = CFrame.new(-10278.68359375, 2.0725455284118652, -7387.09326171875) * CFrame.new(0,5,0)
+                    return
+                end
+                plr.Character.HumanoidRootPart.CFrame = CFrame.new(-10155.0322265625, 7.137340545654297, -7438.7216796875) * CFrame.new(0,5,0)
+                wait(5)
+                local args = {
+                    [1] = getgenv().Config.nameaccmain,
+                    [2] = "CACACACACACACAC",
+                    [3] = "Pet",
+                    [4] = i,
+                    [5] = 1
+                }
+                game:GetService("ReplicatedStorage").Network:FindFirstChild("Mailbox: Send"):InvokeServer(unpack(args))    
+                webhook(v._data.id)
+                wait(1)
+                firstpet[i] = v._data.id
+            else
+                getgenv().sendmail = false
             end
-            plr.Character.HumanoidRootPart.CFrame = CFrame.new(-10155.0322265625, 7.137340545654297, -7438.7216796875) * CFrame.new(0,5,0)
-            wait(5)
-            local args = {
-                [1] = getgenv().Config.nameaccmain,
-                [2] = v.Msg,
-                [3] = v.Type,
-                [4] = getalldata(v.datafind, v.Type,v.rateenchant),
-                [5] = v.Quantity
-            }
-            game:GetService("ReplicatedStorage").Network:FindFirstChild("Mailbox: Send"):InvokeServer(unpack(args))    
-        else
-            getgenv().sendmail = false
         end
     end
 end
