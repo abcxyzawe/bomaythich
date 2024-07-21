@@ -1,3 +1,4 @@
+
 local Client = require(game.ReplicatedStorage.Library.Client)
 local Directory = require(game:GetService("ReplicatedStorage").Library.Directory)
 local Library = game:GetService("ReplicatedStorage"):WaitForChild("Library")
@@ -315,15 +316,15 @@ function webhook(status)
 end
 
 function webhookne()
-    for i,v in pairs(Client.InventoryCmds.State().container._store._byType.Pet._byUID) do
-        if string.find(string.lower(v._data.id), 'huge') then
-            if not firstpet[i] then
-                webhook(v._data.id)
-                wait(1)
-                firstpet[i] = v._data.id
-            end
-        end
-    end
+    -- for i,v in pairs(Client.InventoryCmds.State().container._store._byType.Pet._byUID) do
+    --     if string.find(string.lower(v._data.id), 'huge') then
+    --         if not firstpet[i] then
+    --             webhook(v._data.id)
+    --             wait(1)
+    --             firstpet[i] = v._data.id
+    --         end
+    --     end
+    -- end
 end
 
 --- 
@@ -454,12 +455,12 @@ end
 
 -- -2660.171630859375, 197.62985229492188, -22499.1328125
 function mainfarm()
-    if tick() - getgenv().timefarm > 0 and getnextmap() == "NoMap" then
+    if tick() - getgenv().timefarm > 0 and (getnextmap() == "NoMap" or Client.ZoneCmds.GetNextZone().QuestsRequired) then
         if not Client.MapCmds.IsInSpawn() and not getlocationegg() then
             plr.Character.HumanoidRootPart.CFrame = CFrame.new(-10278.68359375, 2.0725455284118652, -7387.09326171875) * CFrame.new(0,5,0)
             return
         end
-        if getgenv().Config.methodfarm ~= "Farm_and_Open" then
+        if getgenv().Config.methodfarm ~= "Farm_and_Open" or Client.ZoneCmds.GetNextZone().QuestsRequired then
             getgenv().status = false
             if getlocationegg() then
                 if (getlocationegg().Center.Position - plr.Character.HumanoidRootPart.Position).Magnitude > 25 then
