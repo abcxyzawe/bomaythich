@@ -5,7 +5,7 @@ local Library = game:GetService("ReplicatedStorage"):WaitForChild("Library")
 local Network = Library:WaitForChild("Client")
 local v_u_9 = require(Network.Network)
 local plr = game.Players.LocalPlayer
-
+print(Client.ZoneCmds.GetNextZone().QuestsRequired)
 loadstring(game:HttpGet("https://raw.githubusercontent.com/Hiepphamone/lowmap/main/lowmap"))()
 
 --- anti afk
@@ -453,14 +453,27 @@ function autosendmail()
 end
 ---
 
+function collectrank()
+    local a = require(game:GetService("ReplicatedStorage").Library.Directory.Ranks)
+    local b = require(game:GetService("ReplicatedStorage").Library.Util.RanksUtil)
+    for i = 1, #a[b.RankIDFromNumber(21)].Rewards do
+        local args = {
+            [1] = i
+        }
+    
+        game:GetService("ReplicatedStorage").Network.Ranks_ClaimReward:FireServer(unpack(args))
+        wait(5)
+    end
+end
+
 -- -2660.171630859375, 197.62985229492188, -22499.1328125
 function mainfarm()
-    if tick() - getgenv().timefarm > 0 and (getnextmap() == "NoMap" or Client.ZoneCmds.GetNextZone().QuestsRequired) then
+    if tick() - getgenv().timefarm > 0 and (getnextmap() == "NoMap" or type(Client.Save.Get().ZoneGateQuest) == "table") then
         if not Client.MapCmds.IsInSpawn() and not getlocationegg() then
             plr.Character.HumanoidRootPart.CFrame = CFrame.new(-10278.68359375, 2.0725455284118652, -7387.09326171875) * CFrame.new(0,5,0)
             return
         end
-        if getgenv().Config.methodfarm ~= "Farm_and_Open" or Client.ZoneCmds.GetNextZone().QuestsRequired then
+        if getgenv().Config.methodfarm ~= "Farm_and_Open" or type(Client.Save.Get().ZoneGateQuest) == "table" then
             getgenv().status = false
             if getlocationegg() then
                 if (getlocationegg().Center.Position - plr.Character.HumanoidRootPart.Position).Magnitude > 25 then
@@ -491,10 +504,14 @@ end
 
 spawn(function()
     while true do wait(5)
-        if getgenv().status then
-            pcall(autoetc)
-            pcall(autoflag)
-        end
+        pcall(autoetc)
+        pcall(autoflag)
+    end
+end)
+
+spawn(function()
+    while true do wait(120)
+        pcall(collectrank)
     end
 end)
 
